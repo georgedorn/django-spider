@@ -153,6 +153,7 @@ div#main {
 }
 
 h1 { font-size: 18px; border-bottom: 1px dotted #eee; margin-bottom: 15px; }
+h2 { font-size: 18px; border-bottom: 1px dotted #eee; margin-bottom: 15px; }
 h3 { font-size: 16px; }
 
 p { margin-bottom: 8px; }
@@ -164,6 +165,7 @@ ul.object-list li { border-bottom: 1px solid #eee; padding: 10px 0; }
 
 p.back-link { margin: 0 0 20px 0; }
 
+ul.response-list { margin-bottom: 20px; }
 ul.response-list li.status-404 { list-style-image: url(../images/bullet_orange.png) }
 ul.response-list li.status-200 { list-style-image: url(../images/bullet_green.png) }
 ul.response-list li.status-500 { list-style-image: url(../images/bullet_red.png) }

@@ -57,25 +57,26 @@
     </p>
     {% with session.new_404 as new_404 %}
       {% if new_404 %}
-        <h3>{{ new_404.count }} new 404</h3>
+        <h2>{{ new_404.count }} new 404</h2>
         <ul class="response-list">
-        {% for result in new_404 %}
-          {% include "spider/includes/result_list.hmlt" %}
+        {% for object in new_404 %}
+          {% include "spider/includes/result_list.html" %}
         {% endfor %}
         </ul>
       {% endif %}
     {% endwith %}
     {% with session.new_500 as new_500 %}
       {% if new_500 %}
-        <h3>{{ new_500.count }} new 500</h3>
+        <h2>{{ new_500.count }} new 500</h2>
         <ul class="response-list">
-        {% for result in new_500 %}
-          {% include "spider/includes/result_list.hmlt" %}
+        {% for object in new_500 %}
+          {% include "spider/includes/result_list.html" %}
         {% endfor %}
         </ul>
       {% endif %}
     {% endwith %}
   {% endif %}
+  <h2>Results</h2>
   <ul id="response-list" class="response-list">
     {% if session.complete %}
       <li><h3>PROCESSING FINISHED</h3></li>
