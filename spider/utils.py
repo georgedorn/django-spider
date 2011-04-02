@@ -84,3 +84,6 @@ def crawl(source_url, url, timeout):
             raise OffsiteLinkException
     
     return headers, content, []
+
+def ascii_hammer(content):
+    return ''.join([c for c in content if ord(c) < 128])

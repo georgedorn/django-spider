@@ -3,11 +3,15 @@ import re
 import threading
 import time
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 
 from spider.exceptions import UnfetchableURLException, OffsiteLinkException
-from spider.utils import crawl
+from spider.utils import crawl, ascii_hammer
+
+
+STORE_CONTENT = getattr(settings, 'SPIDER_STORE_CONTENT', True)
 
 
 class SpiderProfile(models.Model):
@@ -87,6 +91,7 @@ class SpiderSession(models.Model):
                     except (UnfetchableURLException, OffsiteLinkException, AttributeError):
                         pass
                     else:
+                        content = STORE_CONTENT and ascii_hammer(content) or ''
                         url_result = URLResult(
                             url=url,
                             source_url=source,
