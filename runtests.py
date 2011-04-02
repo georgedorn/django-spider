@@ -4,19 +4,20 @@ from os.path import dirname, abspath
 
 from django.conf import settings
 
+test_settings = dict(
+    DATABASE_ENGINE = 'sqlite3',
+    DATABASE_NAME = '',
+    INSTALLED_APPS = [
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sites',
+        'djutils',
+        'spider',
+    ],
+)
 
 if not settings.configured:
-    settings.configure(
-        DATABASE_ENGINE = 'sqlite3',
-        DATABASE_NAME = '',
-        INSTALLED_APPS = [
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sites',
-            'djutils',
-            'spider',
-        ],
-    )
+    settings.configure(**test_settings)
 
 from django.test.simple import run_tests
 

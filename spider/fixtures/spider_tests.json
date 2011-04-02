@@ -1,0 +1,174 @@
+[
+  {
+    "pk": 1, 
+    "model": "spider.spiderprofile", 
+    "fields": {
+      "time_limit": 60, 
+      "title": "reddit", 
+      "url": "http://reddit.com/", 
+      "depth": 2, 
+      "threads": 4, 
+      "timeout": 10
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "spider.spiderprofile", 
+    "fields": {
+      "time_limit": 60, 
+      "title": "google", 
+      "url": "http://google.com/", 
+      "depth": 2, 
+      "threads": 4, 
+      "timeout": 10
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "spider.spidersession", 
+    "fields": {
+      "spider_profile": 1, 
+      "complete": true, 
+      "created_date": "2011-04-01 00:00:00"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "spider.spidersession", 
+    "fields": {
+      "spider_profile": 1, 
+      "complete": true, 
+      "created_date": "2011-04-02 00:00:00"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/", 
+      "response_status": 200, 
+      "source_url": "", 
+      "session": 1, 
+      "created_date": "2011-04-01 00:00:00", 
+      "response_time": 0.6
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/django/", 
+      "response_status": 200, 
+      "source_url": "http://reddit.com/", 
+      "session": 1, 
+      "created_date": "2011-04-01 00:00:00", 
+      "response_time": 0.5
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/python/", 
+      "response_status": 200, 
+      "source_url": "http://reddit.com/", 
+      "session": 1, 
+      "created_date": "2011-04-01 00:00:01", 
+      "response_time": 0.4
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/error/", 
+      "response_status": 500, 
+      "source_url": "http://reddit.com/", 
+      "session": 1, 
+      "created_date": "2011-04-01 00:00:02", 
+      "response_time": 0.3
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/not-here/", 
+      "response_status": 404, 
+      "source_url": "http://reddit.com/", 
+      "session": 1, 
+      "created_date": "2011-04-01 00:00:03", 
+      "response_time": 0.5
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/", 
+      "response_status": 200, 
+      "source_url": "", 
+      "session": 2, 
+      "created_date": "2011-04-02 00:00:00", 
+      "response_time": 0.6
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/django/", 
+      "response_status": 200, 
+      "source_url": "http://reddit.com/", 
+      "session": 2, 
+      "created_date": "2011-04-02 00:00:00", 
+      "response_time": 0.5
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/python/", 
+      "response_status": 200, 
+      "source_url": "http://reddit.com/", 
+      "session": 2, 
+      "created_date": "2011-04-02 00:00:01", 
+      "response_time": 0.4
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/error/", 
+      "response_status": 500, 
+      "source_url": "http://reddit.com/", 
+      "session": 2, 
+      "created_date": "2011-04-02 00:00:02", 
+      "response_time": 0.3
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "spider.urlresult", 
+    "fields": {
+      "content_length": 10000, 
+      "url": "http://reddit.com/r/not-here/", 
+      "response_status": 404, 
+      "source_url": "http://reddit.com/", 
+      "session": 2, 
+      "created_date": "2011-04-02 00:00:03", 
+      "response_time": 0.5
+    }
+  }
+]

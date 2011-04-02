@@ -1,3 +1,6 @@
 include LICENSE
 include MANIFEST.in
 include README.rst
+recursive-include spider/fixtures *.json
+recursive-include spider/templates *.html
+recursive-include spider/media *.css *.js *.png
