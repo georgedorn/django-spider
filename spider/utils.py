@@ -8,7 +8,8 @@ from spider.exceptions import UnfetchableURLException, OffsiteLinkException
 from djutils.decorators import memoize
 
 
-domain_re = re.compile('(([a-z]+://)[^/]+)*')
+domain_re = re.compile('(([a-z]+://)[^/\?]+)*')
+subdomain_re = re.compile('([a-z]+://)(.*?\.)+([^\/\?]+\.[^\/\?\.]+([\/\?].*)?)')
 
 def get_domain(url):
     match = re.search(domain_re, url)
@@ -43,6 +44,12 @@ def get_urls(content):
     
     return [a['href'] for a in soup.findAll('a')]
 
+def strip_subdomain(url):
+    match = subdomain_re.search(url)
+    if match:
+        return subdomain_re.sub('\\1\\3', url)
+    return url
+
 @memoize
 def is_on_site(source_url, url):
     source_domain = get_domain(source_url)
@@ -52,8 +59,15 @@ def is_on_site(source_url, url):
     if url.startswith('/'):
         return True
     
+    if '://' not in url:
+        return True
+    
     domain = get_domain(url)
     if domain and domain == source_domain:
+        return True
+    
+    # try stripping out any subdomains
+    if domain and strip_subdomain(domain) == strip_subdomain(source_domain):
         return True
     
     return False
