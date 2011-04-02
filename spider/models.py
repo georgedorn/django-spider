@@ -144,7 +144,7 @@ class SpiderSession(models.Model):
                     return visited
     
     def results_with_status(self, status):
-        return self.results.filter(response_status=status).count()
+        return self.results.filter(response_status=status)
     
     def results_404(self):
         return self.results_with_status(404)
@@ -154,6 +154,35 @@ class SpiderSession(models.Model):
     
     def results_200(self):
         return self.results_with_status(200)
+    
+    def new_this_session(self, status):
+        # results with the given status that were not present in the previous
+        # session
+        
+        previous_qs = SpiderSession.objects.filter(
+            spider_profile=self.spider_profile,
+            created_date__lt=self.created_date
+        ).order_by('-created_date')
+        
+        current_results = self.results_with_status(status)
+        
+        try:
+            last_session = previous_qs[0]
+        except IndexError:
+            return current_results
+        
+        previous_results = last_session.results_with_status(status)
+        
+        return current_results.exclude(url__in=previous_results.values('url'))
+    
+    def new_404(self):
+        return self.new_this_session(404)
+    
+    def new_500(self):
+        return self.new_this_session(500)
+    
+    def new_200(self):
+        return self.new_this_session(200)
 
 
 class URLResult(models.Model):

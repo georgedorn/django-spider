@@ -48,7 +48,35 @@
 
 {% block content %}
   <p class="back-link"><a href="{% url profiles_profile_detail session.spider_profile.pk %}">&laquo; back to sessions</a></p>
-  <ul id="response-list">
+  {% if session.complete %}
+    <p class="results clearfix">
+      <span>{{ session.results.count }} results</span>
+      <span class="results-200">{{ session.results_200.count }} OK</span>
+      <span class="results-404">{{ session.results_404.count }} Not Found</span>
+      <span class="results-500">{{ session.results_500.count }} Error</span>
+    </p>
+    {% with session.new_404 as new_404 %}
+      {% if new_404 %}
+        <h3>{{ new_404.count }} new 404</h3>
+        <ul class="response-list">
+        {% for result in new_404 %}
+          {% include "spider/includes/result_list.hmlt" %}
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% with session.new_500 as new_500 %}
+      {% if new_500 %}
+        <h3>{{ new_500.count }} new 500</h3>
+        <ul class="response-list">
+        {% for result in new_500 %}
+          {% include "spider/includes/result_list.hmlt" %}
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  {% endif %}
+  <ul id="response-list" class="response-list">
     {% if session.complete %}
       <li><h3>PROCESSING FINISHED</h3></li>
     {% endif %}

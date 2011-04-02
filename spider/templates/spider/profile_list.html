@@ -17,15 +17,17 @@
         <p>{{ object.threads }} threads, {{ object.time_limit }} seconds, {{ object.depth }} depth</p>
         {% if object.sessions.count %}
           {% with object.sessions.all.0 as session %}
-            <p class="results">
+            <p class="results clearfix">
               <span>{{ session.created_date|date:"m/d/Y g:ia" }} {{ session.results.count }} results</span>
-              <span class="results-200">{{ session.results_200 }} OK</span>
-              <span class="results-404">{{ session.results_404 }} Not Found</span>
-              <span class="results-500">{{ session.results_500 }} Error</span>
+              <span class="results-200">{{ session.results_200.count }} OK</span>
+              <span class="results-404">{{ session.results_404.count }} Not Found</span>
+              <span class="results-500">{{ session.results_500.count }} Error</span>
             </p>
           {% endwith %}
         {% endif %}
       </li>
+    {% empty %}
+      <li><p>No profiles exist</p></li>
     {% endfor %}
   </ul>
 {% endblock %}
