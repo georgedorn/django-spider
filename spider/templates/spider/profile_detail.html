@@ -1,0 +1,27 @@
+{% extends "spider/base_profile.html" %}
+
+
+{% block title %}Profile for: {{ profile.title }}{% endblock %}
+
+{% block content_title %}{{ profile.title }}{% endblock %}
+
+{% block content %}
+  <form method="post" class="new-session" action="{% url profiles_session_create profile.pk %}">{% csrf_token %}
+    <button type="submit">New session</button>
+  </form>
+  <p class="back-link"><a href="{% url profiles_profile_list %}">&laquo; all profiles</a></p>
+  
+  <ul class="object-list session-list">
+    {% for object in object_list %}
+      <li>
+        <h3><a class="session" href="{{ object.get_absolute_url }}">{{ object.created_date|date:"F jS, Y g:ia" }}</a></h3>
+        <p class="results">
+          <span>{{ object.results.count }} results</span>
+          <span class="results-200">{{ object.results_200 }} OK</span>
+          <span class="results-404">{{ object.results_404 }} Not Found</span>
+          <span class="results-500">{{ object.results_500 }} Error</span>
+        </p>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

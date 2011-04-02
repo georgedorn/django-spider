@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>{% block title %}{% endblock %} | Spiders</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css?v=1">
+</head>
+
+<body>
+  <div id="container">
+    <header>
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </header>
+  
+    <div id="main">
+      <h1>{% block content_title %}{% endblock %}</h1>
+      <div id="content">{% block content %}{% endblock %}</div>
+    </div>
+    
+    <footer>{% block footer %}{% endblock %}</footer>
+  </div> <!--! end of #container -->
+
+  <!-- Javascript at the bottom for fast page loading -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script>!window.jQuery && document.write('<script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"><\/script>')</script>
+  
+  {% block extended_scripts %}{% endblock %}
+
+  {% comment %}
+  <script>
+   var _gaq = [['_setAccount', 'UA-XXXXX-X'], ['_trackPageview']];
+   (function(d, t) {
+    var g = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    g.async = true;
+    g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g, s);
+   })(document, 'script');
+  </script>
+  {% endcomment %}
+</body>
+</html>

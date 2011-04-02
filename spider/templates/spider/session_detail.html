@@ -1,0 +1,63 @@
+{% extends "spider/base_profile.html" %}
+
+
+{% block title %}{{ session.profile.title }} {{ session.created_date|date:"m/d/Y g:ia" }}{% endblock %}
+
+{% block extended_scripts %}
+  <script type="text/javascript">
+    $(function() {
+      var responseList = $('ul#response-list'),
+          url = '{% url profiles_session_detail session.spider_profile.pk session.pk %}',
+          maxId = {{ max_id }},
+          delay = 1000;
+      
+      function receiveUpdates() {
+        $.get(url + '?max_id=' + maxId, function(data) {
+          var elem = $('ul#response-list');
+          maxId = data.max_id;
+          $.each(data.results, function(k, urlResult) {
+            elem.prepend(urlResult);
+          });
+          if (data.complete) {
+            responseList.prepend('<li><h3>PROCESSING FINISHED</h3></li>');
+          } else {
+            setTimeout(function() {receiveUpdates();}, delay);
+          }
+        }, 'json');
+      }
+      
+      $('a.result-details').live('click', function(e) {
+        e.preventDefault();
+
+        var elem = $(this);
+        $.get(elem.attr('href'), function(data) {
+          var detailContainer = elem.siblings('.detail-display');
+          detailContainer.html(data.rendered);
+          detailContainer.show();
+        }, 'json');
+      });
+      
+      {% if not session.complete %}
+        receiveUpdates();
+      {% endif %}
+    });
+  </script>
+{% endblock %}
+
+{% block content_title %}{{ session.spider_profile.title }} {{ session.created_date|date:"m/d/Y g:ia" }}{% endblock %}
+
+{% block content %}
+  <p class="back-link"><a href="{% url profiles_profile_detail session.spider_profile.pk %}">&laquo; back to sessions</a></p>
+  <ul id="response-list">
+    {% if session.complete %}
+      <li><h3>PROCESSING FINISHED</h3></li>
+    {% endif %}
+    {% for object in object_list %}
+      {% include "spider/includes/result_list.html" %}
+    {% empty %}
+      {% if not session.complete %}
+        <li><p>Hang out, your spiders are getting ready</p></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endblock %}
