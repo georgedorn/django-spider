@@ -178,6 +178,11 @@ span.results-200 { color: #080; }
 span.results-404 { color: #da0; }
 span.results-500 { color: #d00; }
 
+div.response-time-graph {
+    width: 400px;
+    height: 80px;
+}
+
 /* These selection declarations have to be separate.
    No text-shadow: twitter.com/miketaylr/status/12228805301 
    Also: hot pink. */

@@ -4,6 +4,7 @@
 {% block title %}{{ session.profile.title }} {{ session.created_date|date:"m/d/Y g:ia" }}{% endblock %}
 
 {% block extended_scripts %}
+  <script src="http://flot.googlecode.com/svn/trunk/jquery.flot.js" type="text/javascript"></script>
   <script type="text/javascript">
     $(function() {
       var responseList = $('ul#response-list'),
@@ -33,7 +34,11 @@
         $.get(elem.attr('href'), function(data) {
           var detailContainer = elem.siblings('.detail-display');
           detailContainer.html(data.rendered);
+            
           detailContainer.show();
+
+          var resultsGraph = detailContainer.find('.response-time-graph');
+          $.plot(resultsGraph, [data.response_times], {xaxis: {ticks: []}});
         }, 'json');
       });
       

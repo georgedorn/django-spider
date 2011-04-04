@@ -93,8 +93,19 @@ def url_result_detail(request, profile_id, session_id, url_result_id,
     
     if request.is_ajax():
         result = get_object_or_404(session.results.all(), pk=url_result_id)
+        
+        previous_qs = URLResult.objects.filter(
+            session__spider_profile=profile,
+            url=result.url,
+            created_date__lte=result.created_date,
+        )
+        response_times = previous_qs.values_list(
+            'response_time', flat=True
+        ).order_by('created_date')
+        
         context = {
-            'rendered': render_to_string('spider/includes/result_detail.html', {'object': result})
+            'rendered': render_to_string('spider/includes/result_detail.html', {'object': result}),
+            'response_times': list(enumerate(response_times[:50])),
         }
         return json_response(context)
     else:
