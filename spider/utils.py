@@ -23,6 +23,9 @@ def get_domain(url):
         return match.group()
     return ''
 
+def get_host(url):
+    return get_domain(url).split('://')[1]
+
 def relative_to_full(example_url, url):
     """
     Given a url which may or may not be a relative url, convert it to a full
@@ -81,14 +84,13 @@ def filter_urls(source, urls):
                 if is_on_site(source, url)
     ]
 
-def fetch_url(sock, url):
+def fetch_url(url, timeout):
+    sock = httplib2.Http(timeout=timeout)
     return sock.request(url)
 
 def crawl(source_url, url, timeout):
-    sock = httplib2.Http(timeout=timeout)
-    
     try:
-        headers, content = fetch_url(sock, url)
+        headers, content = fetch_url(url, timeout)
     except socket.error:
         raise UnfetchableURLException
     
