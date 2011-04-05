@@ -7,11 +7,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from spider.exceptions import UnfetchableURLException, OffsiteLinkException
-from spider.utils import crawl, ascii_hammer
-
-
-STORE_CONTENT = getattr(settings, 'SPIDER_STORE_CONTENT', True)
+from spider.utils import crawl, ascii_hammer, SpiderThread
 
 
 class SpiderProfile(models.Model):
@@ -53,8 +49,8 @@ class SpiderSession(models.Model):
     def spider(self):
         # these were originally args, but thought i'd move them to the profile
         # model:
-        time_limit = self.spider_profile.time_limit
         timeout = self.spider_profile.timeout
+        time_limit = self.spider_profile.time_limit
         depth = self.spider_profile.depth
         threads = self.spider_profile.threads
         
@@ -75,42 +71,17 @@ class SpiderSession(models.Model):
         
         # track what urls are scheduled to ensure we don't hit things twice
         scheduled = set()
-        
-        # simple worker that pulls links
-        def _worker():
-            while not finished.is_set():
-                try:
-                    url, source, depth = pending_urls.get(timeout=timeout)
-                except Queue.Empty:
-                    pass
-                else:
-                    try:
-                        crawl_start = time.time()
-                        headers, content, urls = crawl(self.spider_profile.url, url, timeout)
-                        response_time = time.time() - crawl_start
-                    except (UnfetchableURLException, OffsiteLinkException, AttributeError):
-                        pass
-                    else:
-                        content = STORE_CONTENT and ascii_hammer(content) or ''
-                        url_result = URLResult(
-                            url=url,
-                            source_url=source,
-                            content=content,
-                            response_status=int(headers['status']),
-                            response_time=response_time,
-                            content_length=int(headers['content-length']),
-                        )
-                        processed_responses.put((url_result, urls, depth))
-                    
-                    pending_urls.task_done()
-        
+
         # create a couple of threads to chew on urls
-        threads = [threading.Thread(target=_worker) for x in range(threads)]
+        threads = [
+            SpiderThread(pending_urls, processed_responses, finished, self) \
+                for x in range(threads)
+        ]
         
         # start with the source url
         pending_urls.put((self.spider_profile.url, '', depth))
         scheduled.add(self.spider_profile.url)
-        
+
         # start our worker threads
         for t in threads:
             t.daemon = True
@@ -119,11 +90,12 @@ class SpiderSession(models.Model):
         while 1:
             try:
                 # pull an item from the response queue
-                url_result, urls, depth = processed_responses.get(timeout=timeout)
+                result_dict, urls, depth = processed_responses.get(timeout=timeout)
             except Queue.Empty:
                 pass
             else:
                 # save the result
+                url_result = URLResult(**result_dict)
                 url_result.session = self
                 url_result.save()
                 

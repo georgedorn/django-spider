@@ -1,12 +1,18 @@
 import httplib2
 import lxml.html
+import Queue
 import re
 import socket
+import threading
+import time
+
+from django.conf import settings
 
 from spider.exceptions import UnfetchableURLException, OffsiteLinkException
 
 from djutils.decorators import memoize
 
+STORE_CONTENT = getattr(settings, 'SPIDER_STORE_CONTENT', True)
 
 domain_re = re.compile('(([a-z]+://)[^/\?]+)*')
 subdomain_re = re.compile('([a-z]+://)(.*?\.)+([^\/\?]+\.[^\/\?\.]+([\/\?].*)?)')
@@ -97,3 +103,46 @@ def crawl(source_url, url, timeout):
 
 def ascii_hammer(content):
     return ''.join([c for c in content if ord(c) < 128])
+
+
+class SpiderThread(threading.Thread):
+    def __init__(self, url_queue, response_queue, finish_event, session):
+        threading.Thread.__init__(self)
+
+        self.url_queue = url_queue
+        self.response_queue = response_queue
+        self.finish_event = finish_event
+        
+        # load data from the session obj passed in
+        self.source_url = session.spider_profile.url
+        self.timeout = session.spider_profile.timeout
+    
+    def run(self):
+        while not self.finish_event.is_set():
+            self.process_queue()
+
+    def process_queue(self):
+        try:
+            url, source, depth = self.url_queue.get(timeout=self.timeout)
+        except Queue.Empty:
+            pass
+        else:
+            try:
+                crawl_start = time.time()
+                headers, content, urls = crawl(self.source_url, url, self.timeout)
+                response_time = time.time() - crawl_start
+            except (UnfetchableURLException, OffsiteLinkException, AttributeError):
+                pass
+            else:
+                content = STORE_CONTENT and ascii_hammer(content) or ''
+                results = dict(
+                    url=url,
+                    source_url=source,
+                    content=content,
+                    response_status=int(headers['status']),
+                    response_time=response_time,
+                    content_length=int(headers['content-length']),
+                )
+                self.response_queue.put((results, urls, depth))
+            
+            self.url_queue.task_done()
