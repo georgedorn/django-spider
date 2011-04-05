@@ -21,5 +21,5 @@ dependencies:
 -------------
 
 * `httplib2 <http://code.google.com/p/httplib2/>`_
-* `BeautifulSoup <http://www.crummy.com/software/BeautifulSoup/>`_
+* `lxml <http://lxml.de/lxmlhtml.html#parsing-html>`_
 * `django-utils <http://github.com/coleifer/django-utils>`_

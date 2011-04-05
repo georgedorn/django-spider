@@ -1,7 +1,7 @@
 import httplib2
+import lxml.html
 import re
 import socket
-from BeautifulSoup import BeautifulSoup
 
 from spider.exceptions import UnfetchableURLException, OffsiteLinkException
 
@@ -36,13 +36,9 @@ def relative_to_full(example_url, url):
     return url
 
 def get_urls(content):
-    # retrieve all link hrefs from html and encoding be damned
-    try:
-        soup = BeautifulSoup(content)
-    except UnicodeEncodeError:
-        return []
-    
-    return [a['href'] for a in soup.findAll('a')]
+    # retrieve all link hrefs from html
+    parsed = lxml.html.fromstring(content)
+    return parsed.xpath('//a/@href')
 
 def strip_subdomain(url):
     match = subdomain_re.search(url)
