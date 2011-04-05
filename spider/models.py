@@ -1,5 +1,6 @@
 import Queue
 import re
+import socket
 import threading
 import time
 
@@ -7,7 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from spider.utils import crawl, ascii_hammer, SpiderThread
+from spider.utils import SpiderThread, fetch_url
 
 
 class SpiderProfile(models.Model):
@@ -30,6 +31,17 @@ class SpiderProfile(models.Model):
     def spider(self):
         session = SpiderSession.objects.create(spider_profile=self)
         return session.spider()
+    
+    def check_health(self):
+        status_check = ProfileStatusCheck.objects.create(spider_profile=self)
+        status_check.check_health()
+        return status_check
+    
+    def latest_status(self):
+        try:
+            return self.status_checks.all()[0]
+        except IndexError:
+            pass
 
 
 class SpiderSession(models.Model):
@@ -204,3 +216,33 @@ class URLResult(models.Model):
 
     def short_url(self):
         return re.sub('^([a-z]+:\/\/)?([^\/]+)', '', self.url)
+
+
+class ProfileStatusCheck(models.Model):
+    spider_profile = models.ForeignKey(SpiderProfile, related_name='status_checks')
+    error_fetching = models.BooleanField(default=False)
+    response_status = models.IntegerField(blank=True, null=True)
+    response_time = models.FloatField(blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ('-created_date',)
+    
+    def __unicode__(self):
+        return '%s [%s]' % (self.spider_profile.url, self.response_status)
+    
+    def check_health(self):
+        try:
+            start = time.time()
+            headers, resp = fetch_url(
+                self.spider_profile.url,
+                self.spider_profile.timeout
+            )
+            response_time = time.time() - start
+        except socket.error:
+            self.error_fetching = True
+        else:
+            self.response_time = response_time
+            self.response_status = int(headers['status'])
+        
+        self.save()

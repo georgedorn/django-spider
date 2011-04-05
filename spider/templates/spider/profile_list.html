@@ -8,11 +8,20 @@
 {% block content %}
   <ul class="object-list profile-list">
     {% for object in object_list %}
-      <li>
+      {% with object.latest_status as latest_status %}
+      <li{% if latest_status %} class="{% if latest_status.error_fetching %}error-fetching{% else %}status-{{ latest_status.response_status }}{% endif %}"{% endif %}>
         <form method="post" class="new-session" action="{% url profiles_session_create object.pk %}">{% csrf_token %}
           <button type="submit">New session</button>
         </form>
-        <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h3>
+        <h3><a href="{{ object.get_absolute_url }}">{{ object.title }}</a>
+          {% if latest_status %}
+            {% if latest_status.error_fetching %}
+              <span class="small results-error">error fetching</span>
+            {% else %}
+              <span class="small results-{{ latest_status.response_status }}">{{ latest_status.response_status }}</span>
+            {% endif %}
+          {% endif %}
+        </h3>
         <p><a href="{{ object.url }}">{{ object.url }}</a></p>
         <p>{{ object.threads }} threads, {{ object.time_limit }} seconds, {{ object.depth }} depth</p>
         {% if object.sessions.count %}
@@ -26,6 +35,7 @@
           {% endwith %}
         {% endif %}
       </li>
+      {% endwith %}
     {% empty %}
       <li><p>No profiles exist</p></li>
     {% endfor %}

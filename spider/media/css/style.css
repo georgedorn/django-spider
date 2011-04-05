@@ -163,6 +163,10 @@ form.new-session button { float: right; }
 ul.object-list { list-style-type: none; margin: 0; }
 ul.object-list li { border-bottom: 1px solid #eee; padding: 10px 0; }
 
+li.error-fetching { background-color: #f38750; }
+li.status-404 { background-color: #efd784; }
+li.status-500 { background-color: #ffaa99; }
+
 p.back-link { margin: 0 0 20px 0; }
 
 ul.response-list { margin-bottom: 20px; }
@@ -177,6 +181,9 @@ p.results span { display: block; float: left; margin-right: 60px; }
 span.results-200 { color: #080; }
 span.results-404 { color: #da0; }
 span.results-500 { color: #d00; }
+span.results-error { color: #FF5F0F; }
+
+span.small { font-size: 11px; }
 
 div.response-time-graph {
     width: 400px;
