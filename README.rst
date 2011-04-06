@@ -4,6 +4,7 @@ django-spider
 
 a multi-threaded spider with a web interface
 
+.. image:: http://charlesleifer.com/media/images/photos/grass-spider.png
 
 list of sessions for a site
 ---------------------------
