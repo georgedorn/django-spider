@@ -246,3 +246,6 @@ class ProfileStatusCheck(models.Model):
             self.response_status = int(headers['status'])
         
         self.save()
+    
+    def is_ok(self):
+        return self.response_status == 200

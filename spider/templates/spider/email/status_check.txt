@@ -1,0 +1,4 @@
+The following profiles reported errors during status checks:
+{% for status_check in status_check_list %}
+* {{ status_check.spider_profile.name }}: {% if status_check.error_fetching %}unable to fetch{% else %}returned {{ status_check.response_status }}{% endif %}
+{% endfor %}
