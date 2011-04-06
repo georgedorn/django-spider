@@ -24,7 +24,10 @@ def get_domain(url):
     return ''
 
 def get_host(url):
-    return get_domain(url).split('://')[1]
+    domain = get_domain(url)
+    if domain:
+        return domain.split('://')[1]
+    return ''
 
 def relative_to_full(example_url, url):
     """

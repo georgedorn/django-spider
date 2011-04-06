@@ -1,7 +1,7 @@
 from djutils.test import TestCase
 
-from spider.utils import (get_domain, relative_to_full, get_urls, is_on_site, 
-    filter_urls, ascii_hammer, strip_subdomain)
+from spider.utils import (get_domain, get_host, relative_to_full, get_urls,
+    is_on_site, filter_urls, ascii_hammer, strip_subdomain)
 
 
 class SpiderUtilsTestCase(TestCase):
@@ -23,6 +23,19 @@ class SpiderUtilsTestCase(TestCase):
         
         for given, expected in test_data:
             self.assertEqual(get_domain(given), expected)
+    
+    def test_get_host(self):
+        test_data = (
+            ('http://www.reddit.com/', 'www.reddit.com'),
+            ('http://reddit.com', 'reddit.com'),
+            ('http://m.www.reddit.com', 'm.www.reddit.com'),
+            ('http://www.reddit.com/r/django/', 'www.reddit.com'),
+            ('www.reddit.com', ''),
+            ('reddit.com', ''),
+        )
+        
+        for given, expected in test_data:
+            self.assertEqual(get_host(given), expected)
     
     def test_relative_to_full(self):
         self.assertEqual('http://test.com/a/b/', relative_to_full('http://test.com', '/a/b/'))
