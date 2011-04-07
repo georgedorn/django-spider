@@ -74,6 +74,19 @@ def session_detail(request, profile_id, session_id, template_name='spider/sessio
             }
         )
 
+def profile_health(request, profile_id, template_name='spider/profile_health.html'):
+    profile = get_object_or_404(SpiderProfile, pk=profile_id)
+    queryset = profile.status_checks.all()
+    
+    return object_list(
+        request,
+        queryset=queryset,
+        template_name=template_name,
+        paginate_by=50,
+        page=int(request.GET.get('page', 1)),
+        extra_context={'profile': profile}
+    )
+
 @login_required
 def session_create(request, profile_id):
     if request.method != 'POST':

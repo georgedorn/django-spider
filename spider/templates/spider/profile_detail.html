@@ -9,18 +9,15 @@
   <form method="post" class="new-session" action="{% url profiles_session_create profile.pk %}">{% csrf_token %}
     <button type="submit">New session</button>
   </form>
-  <p class="back-link"><a href="{% url profiles_profile_list %}">&laquo; all profiles</a></p>
+  <p class="back-link"><a href="{% url profiles_profile_list %}">&laquo; all profiles</a>
+    | <a href="{% url profiles_profile_health profile.pk %}">health</a>
+  </p>
   
   <ul class="object-list session-list">
-    {% for object in object_list %}
+    {% for session in object_list %}
       <li>
-        <h3><a class="session" href="{{ object.get_absolute_url }}">{{ object.created_date|date:"F jS, Y g:ia" }}</a></h3>
-        <p class="results clearfix">
-          <span>{{ object.results.count }} results</span>
-          <span class="results-200">{{ object.results_200.count }} OK</span>
-          <span class="{% if object.results_404 %}results-404{% else %}results-quiet{% endif %}">{{ object.results_404.count }} Not Found</span>
-          <span class="{% if object.results_500 %}results-500{% else %}results-quiet{% endif %}">{{ object.results_500.count }} Error</span>
-        </p>
+        <h3><a class="session" href="{{ session.get_absolute_url }}">{{ session.created_date|date:"F jS, Y g:ia" }}</a></h3>
+        {% include "spider/includes/session_results.html" %}
       </li>
     {% empty %}
       <li><p>No sessions have been created</p></li>

@@ -10,6 +10,10 @@ urlpatterns = patterns('spider.views',
         'profile_detail',
         name='profiles_profile_detail'
     ),
+    url(r'^(?P<profile_id>\d+)/health/$',
+        'profile_health',
+        name='profiles_profile_health',
+    ),
     url(r'^(?P<profile_id>\d+)/new/$',
         'session_create',
         name='profiles_session_create'

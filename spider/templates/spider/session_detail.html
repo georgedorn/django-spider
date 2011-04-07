@@ -54,12 +54,7 @@
 {% block content %}
   <p class="back-link"><a href="{% url profiles_profile_detail session.spider_profile.pk %}">&laquo; back to sessions</a></p>
   {% if session.complete %}
-    <p class="results clearfix">
-      <span>{{ session.results.count }} results</span>
-      <span class="results-200">{{ session.results_200.count }} OK</span>
-      <span class="{% if session.results_404 %}results-404{% else %}results-quiet{% endif %}">{{ session.results_404.count }} Not Found</span>
-      <span class="{% if session.results_500 %}results-500{% else %}results-quiet{% endif %}">{{ session.results_500.count }} Error</span>
-    </p>
+    {% include "spider/includes/session_results.html" %}
     {% with session.new_404 as new_404 %}
       {% if new_404 %}
         <h2>{{ new_404.count }} new 404</h2>

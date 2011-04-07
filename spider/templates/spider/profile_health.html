@@ -1,0 +1,23 @@
+{% extends "spider/base_profile.html" %}
+
+
+{% block title %}{{ profile.title }} Health{% endblock %}
+
+{% block content_title %}{{ profile.title }} Health{% endblock %}
+
+{% block content %}
+  <p class="back-link"><a href="{% url profiles_profile_detail profile.pk %}">&laquo; back to profile</a></p>
+  
+  <ul>
+    {% for status_check in object_list %}
+      <li><span class="{% if status_check.error_fetching %}results-error{% else %}results-{{ status_check.response_status }}{% endif %}">{{ status_check.response_status }}</span>
+        in {{ status_check.response_time|floatformat:"2" }}s
+        on <span class="results-quiet">{{ status_check.created_date|date:"M j, g:ia" }}</span>
+      </li>
+    {% empty %}
+      <li><p>No status checks exist</p></li>
+    {% endfor %}
+  </ul>
+  
+  {% include "spider/includes/pagination.html" %}
+{% endblock %}
