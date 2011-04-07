@@ -1,12 +1,27 @@
 {% extends "spider/base_profile.html" %}
 
 
+{% block extended_scripts %}
+  <script src="http://flot.googlecode.com/svn/trunk/jquery.flot.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    $(function() {
+      var initializeGraph = function() {
+        var resultsGraph = $('.status-response-time-graph');
+        var data = [{% for obj in object_list %}[{{ forloop.revcounter0 }}, {{ obj.response_time }}],{% endfor %}];
+        $.plot(resultsGraph, [data], {xaxis: {ticks: []}});
+      }();
+    });
+  </script>
+{% endblock %}
+
 {% block title %}{{ profile.title }} Health{% endblock %}
 
 {% block content_title %}{{ profile.title }} Health{% endblock %}
 
 {% block content %}
   <p class="back-link"><a href="{% url profiles_profile_detail profile.pk %}">&laquo; back to profile</a></p>
+  
+  <div class="status-response-time-graph"></div>
   
   <ul>
     {% for status_check in object_list %}

@@ -191,6 +191,11 @@ div.response-time-graph {
     height: 80px;
 }
 
+div.status-response-time-graph {
+    width: 600px;
+    height: 125px;
+}
+
 /* These selection declarations have to be separate.
    No text-shadow: twitter.com/miketaylr/status/12228805301 
    Also: hot pink. */
