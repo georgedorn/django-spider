@@ -239,7 +239,7 @@ class ProfileStatusCheck(models.Model):
                 self.spider_profile.timeout
             )
             response_time = time.time() - start
-        except socket.error:
+        except (socket.error, AttributeError):
             self.error_fetching = True
         else:
             self.response_time = response_time
