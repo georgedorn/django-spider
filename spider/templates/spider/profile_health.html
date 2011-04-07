@@ -7,7 +7,7 @@
     $(function() {
       var initializeGraph = function() {
         var resultsGraph = $('.status-response-time-graph');
-        var data = [{% for obj in object_list %}[{{ forloop.revcounter0 }}, {{ obj.response_time }}],{% endfor %}];
+        var data = [{% for obj in object_list %}{% if obj.response_time %}[{{ forloop.revcounter0 }}, {{ obj.response_time }}],{% endif %}{% endfor %}];
         $.plot(resultsGraph, [data], {xaxis: {ticks: []}});
       }();
     });
