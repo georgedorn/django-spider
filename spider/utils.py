@@ -68,6 +68,8 @@ def is_on_site(source_url, url):
         return True
     
     if '://' not in url:
+        if url.startswith('mailto:'):
+            return False
         return True
     
     domain = get_domain(url)
