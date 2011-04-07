@@ -57,8 +57,8 @@
     <p class="results clearfix">
       <span>{{ session.results.count }} results</span>
       <span class="results-200">{{ session.results_200.count }} OK</span>
-      <span class="results-404">{{ session.results_404.count }} Not Found</span>
-      <span class="results-500">{{ session.results_500.count }} Error</span>
+      <span class="{% if session.results_404 %}results-404{% else %}results-quiet{% endif %}">{{ session.results_404.count }} Not Found</span>
+      <span class="{% if session.results_500 %}results-500{% else %}results-quiet{% endif %}">{{ session.results_500.count }} Error</span>
     </p>
     {% with session.new_404 as new_404 %}
       {% if new_404 %}

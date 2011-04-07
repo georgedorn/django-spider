@@ -181,6 +181,7 @@ p.results span { display: block; float: left; margin-right: 60px; }
 span.results-200 { color: #080; }
 span.results-404 { color: #da0; }
 span.results-500 { color: #d00; }
+span.results-quiet { color: #999; }
 span.results-error { color: #FF5F0F; }
 
 span.small { font-size: 11px; }

@@ -18,8 +18,8 @@
         <p class="results clearfix">
           <span>{{ object.results.count }} results</span>
           <span class="results-200">{{ object.results_200.count }} OK</span>
-          <span class="results-404">{{ object.results_404.count }} Not Found</span>
-          <span class="results-500">{{ object.results_500.count }} Error</span>
+          <span class="{% if object.results_404 %}results-404{% else %}results-quiet{% endif %}">{{ object.results_404.count }} Not Found</span>
+          <span class="{% if object.results_500 %}results-500{% else %}results-quiet{% endif %}">{{ object.results_500.count }} Error</span>
         </p>
       </li>
     {% empty %}

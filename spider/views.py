@@ -36,7 +36,7 @@ def profile_detail(request, profile_id, template_name='spider/profile_detail.htm
 def session_detail(request, profile_id, session_id, template_name='spider/session_detail.html'):
     profile = get_object_or_404(SpiderProfile, pk=profile_id)
     session = get_object_or_404(profile.sessions.all(), pk=session_id)
-    queryset = session.results.all().order_by('-pk')
+    queryset = session.results.all()
     
     max_id = queryset.aggregate(max_id=Max('id'))['max_id'] or 0
     
@@ -44,6 +44,7 @@ def session_detail(request, profile_id, session_id, template_name='spider/sessio
         max_id = int(request.GET.get('max_id', max_id))
         context = {'max_id': max_id, 'complete': session.complete, 'results': []}
         
+        queryset = queryset.order_by('-pk')
         results = queryset.filter(pk__gt=max_id).order_by('-id')
         
         if results:
@@ -56,8 +57,10 @@ def session_detail(request, profile_id, session_id, template_name='spider/sessio
         return json_response(context)
     else:
         ordering = request.GET.get('ordering', '').lstrip('-')
-        if ordering in ('response_time', 'content_length', 'url'):
+        if ordering in ('response_time', 'content_length', 'url', 'response_status'):
             queryset = queryset.order_by(request.GET['ordering'])
+        else:
+            queryset = queryset.order_by('-response_status', 'url')
         
         return object_list(
             request,
