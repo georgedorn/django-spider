@@ -14,6 +14,7 @@ test_settings = dict(
         'djutils',
         'spider',
     ],
+    ROOT_URLCONF = '',
 )
 
 if not settings.configured:
