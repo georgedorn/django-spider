@@ -78,7 +78,7 @@ def is_on_site(source_url, url):
         return True
     
     if '://' not in url:
-        if url.startswith('mailto:'):
+        if url.startswith('mailto') or url.startswith('javascript'):
             return False
         return True
     
