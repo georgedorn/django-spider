@@ -70,3 +70,101 @@ class SpideringTestCase(TestCase):
         headers, content, urls = crawl('http://testserver/', 'http://testserver/500/', 1)
         self.assertEqual(urls, [])
         self.assertEqual(headers['status'], '500')
+    
+    def test_spider(self):
+        profile = SpiderProfile.objects.create(
+            title='test server',
+            url='http://testserver/',
+            time_limit=.5,
+            depth=1,
+            timeout=.25,
+        )
+        results = profile.spider()
+
+        self.assertEqual(results, {
+            'http://testserver/': 200, # depth 0
+            
+            'http://testserver/1/': 200, # depth 1
+            'http://testserver/2/': 200,
+            'http://testserver/?page=3': 200
+        })
+        
+        latest_session = profile.sessions.all()[0]
+        self.assertEqual(latest_session.results.count(), 4)
+        self.assertEqual(dict(
+                (obj.url, obj.response_status) \
+                    for obj in latest_session.results.all()
+            ), results
+        )
+        
+        profile.depth = 2
+        profile.save()
+        results = profile.spider()
+        
+        self.assertEqual(results, {
+            'http://testserver/': 200, # depth 0
+            
+            'http://testserver/1/': 200, # depth 1
+            'http://testserver/2/': 200,
+            'http://testserver/?page=3': 200,
+            
+            'http://testserver/1/1/': 200, # depth 2
+            'http://testserver/1/2/': 200,
+            'http://testserver/1/?page=3': 200,
+            
+            'http://testserver/2/1/': 200,
+            'http://testserver/2/2/': 200,
+            'http://testserver/2/?page=3': 200,
+        })
+        
+        latest_session = profile.sessions.all()[0]
+        self.assertEqual(latest_session.results.count(), 10)
+        self.assertEqual(dict(
+                (obj.url, obj.response_status) \
+                    for obj in latest_session.results.all()
+            ), results
+        )
+
+        profile.depth = 3
+        profile.save()
+        results = profile.spider()
+        
+        self.assertEqual(results, {
+            'http://testserver/': 200, # depth 0
+            
+            'http://testserver/1/': 200, # depth 1
+            'http://testserver/2/': 200,
+            'http://testserver/?page=3': 200,
+            
+            'http://testserver/1/1/': 200, # depth 2
+            'http://testserver/1/2/': 200,
+            'http://testserver/1/?page=3': 200,
+            
+            'http://testserver/2/1/': 200,
+            'http://testserver/2/2/': 200,
+            'http://testserver/2/?page=3': 200,
+            
+            'http://testserver/1/1/1/': 200, # depth 3
+            'http://testserver/1/1/2/': 200,
+            'http://testserver/1/1/?page=3': 200,
+            
+            'http://testserver/1/2/1/': 200,
+            'http://testserver/1/2/2/': 200,
+            'http://testserver/1/2/?page=3': 200,
+            
+            'http://testserver/2/1/1/': 200,
+            'http://testserver/2/1/2/': 200,
+            'http://testserver/2/1/?page=3': 200,
+            
+            'http://testserver/2/2/1/': 200,
+            'http://testserver/2/2/2/': 200,
+            'http://testserver/2/2/?page=3': 200,
+        })
+        
+        latest_session = profile.sessions.all()[0]
+        self.assertEqual(latest_session.results.count(), 22)
+        self.assertEqual(dict(
+                (obj.url, obj.response_status) \
+                    for obj in latest_session.results.all()
+            ), results
+        )

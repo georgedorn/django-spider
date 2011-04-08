@@ -13,7 +13,7 @@ def wrap_headers(func):
 
 @wrap_headers
 def test_view(request, path):
-    links = ['/' + path + '1/', '2/', '?page=3', 'http://not-here.com/4/']
+    links = ['/' + path + '1/', '2/', '?page=3', 'javascript:void(0);', 'http://not-here.com/4/']
     a_tags = '\n'.join([
         '<a href="%(url)s">%(url)s</a>' % {'url': url} \
             for url in links
