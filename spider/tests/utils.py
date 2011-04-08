@@ -38,11 +38,35 @@ class SpiderUtilsTestCase(TestCase):
             self.assertEqual(get_host(given), expected)
     
     def test_relative_to_full(self):
-        self.assertEqual('http://test.com/a/b/', relative_to_full('http://test.com', '/a/b/'))
-        self.assertEqual('http://test.com/a/b/', relative_to_full('http://test.com/c/d/?cruft', '/a/b/'))
-        self.assertEqual('http://test.com/a/b/', relative_to_full('http://test.com', 'http://test.com/a/b/'))
-        self.assertEqual('http://blah.com/a/b/', relative_to_full('http://test.com', 'http://blah.com/a/b/'))
-        self.assertEqual('/a/b/', relative_to_full('', '/a/b/'))
+        test_data = (
+            # test passing in a domain + a full path
+            (('http://test.com', '/a/b/'), 'http://test.com/a/b/'),
+            
+            # test passing in a deep url + a full path
+            (('http://test.com/c/d/?cruft', '/a/b/'), 'http://test.com/a/b/'),
+            
+            # test passing in a domain + a full url
+            (('http://test.com', 'http://test.com/a/b/'), 'http://test.com/a/b/'),
+            
+            # test passing in a domain + a link to another site
+            (('http://test.com', 'http://blah.com/a/b/'), 'http://blah.com/a/b/'),
+            
+            # test when the link is relative to the current page
+            (('http://test.com', 'index.htm'), 'http://test.com/index.htm'),
+            (('http://test.com/blog/', 'index.htm'), 'http://test.com/blog/index.htm'),
+            
+            # test passing in a relative link that only has a querystring
+            (('http://test.com/blog/', '?page=4'), 'http://test.com/blog/?page=4'),
+            (('http://test.com/blog/?page=2', '?page=3'), 'http://test.com/blog/?page=3'),
+            
+            # test when no domain is present
+            (('', '/a/b/'), '/a/b/'),
+            (('example.com', '/a/b/'), '/a/b/'),
+            (('example.com/', '/a/b/'), '/a/b/'),
+            (('example.com/', 'a/b/'), 'a/b/'),
+        )
+        for (example, url), expected in test_data:
+            self.assertEqual(relative_to_full(example, url), expected)
     
     def test_get_urls(self):
         html = """<html><head></head><body><a href="/blog/">Awesome blog</a> <a href="http://www.google.com/">Google</a></body></html>"""
@@ -82,7 +106,6 @@ class SpiderUtilsTestCase(TestCase):
             'http://www.reddit.com/',
             'http://www.reddit.com/r/django/',
             '/r/django/',
-            'r/django/',
             'http://www.google.com/',
             'http://some-link.com/asdf/reddit/',
         ]
@@ -90,7 +113,6 @@ class SpiderUtilsTestCase(TestCase):
             'http://m.reddit.com/',
             'http://www.reddit.com/',
             'http://www.reddit.com/r/django/',
-            'http://reddit.com/r/django/',
             'http://reddit.com/r/django/',
         ]
         domains = [
@@ -104,7 +126,6 @@ class SpiderUtilsTestCase(TestCase):
         filtered = [
             'http://m.reddit.com/',
             'http://www.reddit.com/',
-            'http://www.reddit.com/r/django/',
             'http://www.reddit.com/r/django/',
             'http://www.reddit.com/r/django/',
         ]
@@ -121,13 +142,22 @@ class SpiderUtilsTestCase(TestCase):
             'http://www.reddit.com/',
             'http://www.reddit.com/r/django/',
             'http://m.www.reddit.com/r/django/',
-            'http://m.www.reddit.com/r/django/',
         ]
         domains = [
             'http://m.www.reddit.com/r/django/',
         ]
         for domain in domains:
             self.assertEqual(filter_urls(domain, urls), filtered)
+        
+        urls = ['?page=2']
+        test_data = (
+            ('http://m.reddit.com', ['http://m.reddit.com/?page=2']),
+            ('http://m.reddit.com/r/django/?page=2', ['http://m.reddit.com/r/django/?page=2']),
+            ('http://reddit.com/r/django/?page=2', ['http://reddit.com/r/django/?page=2']),
+            ('http://reddit.com/?page=2', ['http://reddit.com/?page=2']),
+        )
+        for (source, expected) in test_data:
+            self.assertEqual(filter_urls(source, urls), expected)
     
     def test_ascii_hammer(self):
         test_data = (

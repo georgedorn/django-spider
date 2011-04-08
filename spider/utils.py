@@ -37,9 +37,19 @@ def relative_to_full(example_url, url):
     # remove any hashes
     url = re.sub('(#[^\/]+)', '', url)
     
+    # does this url specify a protocol?  if so, it's already a full url
     if re.match('[a-z]+:\/\/', url):
         return url
     
+    # if the url doesn't start with a slash it's probably relative to the
+    # current url, so join them and return
+    if not url.startswith('/'):
+        # check to see if there is a slash after the protocol -- we'll use the
+        # slash to determine the current working directory for this relative url
+        if re.match('^[a-z]+:\/\/(.+?)\/', example_url):
+            return '/'.join((example_url.rpartition('/')[0], url))
+    
+    # it starts with a slash, so join it with the domain if possible
     domain = get_domain(example_url)
     
     if domain:
@@ -102,7 +112,7 @@ def crawl(source_url, url, timeout):
     if headers['status'] == '200':
         if is_on_site(source_url, headers['content-location']):
             urls = get_urls(content)
-            return headers, content, filter_urls(source_url, urls)
+            return headers, content, filter_urls(url, urls)
         else:
             raise OffsiteLinkException
     
