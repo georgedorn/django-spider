@@ -1,0 +1,14 @@
+{% extends "spider/base_profile.html" %}
+
+
+{% block title %}{{ profile.title }} {{ session.created_date|date:"m/d/Y g:ia" }}{% endblock %}
+
+{% block content_title %}{{ profile.title }} {{ session.created_date|date:"m/d/Y g:ia" }}{% endblock %}
+
+{% block content %}
+  <p class="back-link"><a href="{% url profiles_session_detail profile.pk session.pk %}">&laquo; back to session</a></p>
+  
+  <ul class="response-list">
+    {% include "spider/includes/result_list.html" %}
+  </ul>
+{% endblock %}
