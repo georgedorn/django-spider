@@ -132,6 +132,6 @@ def url_result_detail(request, profile_id, session_id, url_result_id,
             template_name=template_name,
             extra_context={
                 'profile': profile,
-                'sessoin': session,
+                'session': session,
             }
         )
