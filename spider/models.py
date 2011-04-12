@@ -1,6 +1,7 @@
 import Queue
 import re
 import socket
+import sys
 import threading
 import time
 
@@ -224,6 +225,7 @@ class ProfileStatusCheck(models.Model):
     response_status = models.IntegerField(blank=True, null=True)
     response_time = models.FloatField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    exception = models.TextField()
     
     class Meta:
         ordering = ('-created_date',)
@@ -238,13 +240,14 @@ class ProfileStatusCheck(models.Model):
                 self.spider_profile.url,
                 self.spider_profile.timeout
             )
-            response_time = time.time() - start
         except (socket.error, AttributeError):
             self.error_fetching = True
+            exception = sys.exc_info()[1]
+            self.exception = repr(exception)
         else:
-            self.response_time = response_time
             self.response_status = int(headers['status'])
         
+        self.response_time = time.time() - start
         self.save()
     
     def is_ok(self):
