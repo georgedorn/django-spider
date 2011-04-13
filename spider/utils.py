@@ -17,6 +17,7 @@ STORE_CONTENT = getattr(settings, 'SPIDER_STORE_CONTENT', True)
 domain_re = re.compile('(([a-z]+://)[^/\?]+)*')
 subdomain_re = re.compile('([a-z]+://)(.*?\.)+([^\/\?]+\.[^\/\?\.]+([\/\?].*)?)')
 
+
 def get_domain(url):
     match = re.search(domain_re, url)
     if match:
@@ -151,7 +152,11 @@ class SpiderThread(threading.Thread):
             except (UnfetchableURLException, OffsiteLinkException, AttributeError):
                 pass
             else:
+                if 'content-length' not in headers:
+                    headers['content-length'] = len(content)
+
                 content = STORE_CONTENT and ascii_hammer(content) or ''
+
                 results = dict(
                     url=url,
                     source_url=source,

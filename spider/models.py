@@ -96,9 +96,7 @@ class SpiderSession(models.Model):
         scheduled.add(self.spider_profile.url)
 
         # start our worker threads
-        for t in threads:
-            t.daemon = True
-            t.start()
+        [t.start() for t in threads]
         
         while 1:
             try:
@@ -128,10 +126,17 @@ class SpiderSession(models.Model):
                             pending_urls.put((url, processed_url, depth - 1))
             finally:
                 if time.time() - start >= time_limit:
+                    # set the finished flag
                     finished.set()
-                    self.complete = True
-                    self.save()
-                    return visited
+
+                    # wait for all the threads to finish up
+                    [t.join() for t in threads]
+                    break
+
+        self.complete = True
+        self.save()
+
+        return visited
     
     def results_with_status(self, status):
         return self.results.filter(response_status=status)
