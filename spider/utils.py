@@ -109,6 +109,8 @@ def crawl(source_url, url, timeout):
         headers, content = fetch_url(url, timeout)
     except socket.error:
         raise UnfetchableURLException
+    except httplib2.ServerNotFoundError:
+        raise UnfetchableURLException # should be other error
     
     if headers['status'] == '200':
         if is_on_site(source_url, headers['content-location']):
