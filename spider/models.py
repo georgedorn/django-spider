@@ -1,3 +1,4 @@
+import httplib2
 import Queue
 import re
 import socket
@@ -245,7 +246,7 @@ class ProfileStatusCheck(models.Model):
                 self.spider_profile.url,
                 self.spider_profile.timeout
             )
-        except (socket.error, AttributeError):
+        except (socket.error, AttributeError, httplib2.ServerNotFoundError):
             self.error_fetching = True
             exception = sys.exc_info()[1]
             self.exception = repr(exception)
